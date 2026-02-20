@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HerWay | Interview Wings</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ── Interview Wings Styles ── */
+        .interview-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2.5rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+        }
+
+        .interview-hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .interview-hero .glow {
+            width: 140px;
+            height: 140px;
+            background: var(--grad-primary);
+            border-radius: 50%;
+            margin: 0 auto;
+            filter: blur(20px);
+            opacity: 0.5;
+            animation: pulse 3s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.7;
+            }
+        }
+
+        .interview-hero img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin-top: -130px;
+            position: relative;
+            border: 4px solid white;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .interview-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            color: var(--secondary);
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .interview-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        /* ── Progress ── */
+        .progress-container {
+            margin-bottom: 2rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(244, 114, 141, 0.15);
+            border-radius: 10px;
+            margin-bottom: 0.75rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--grad-primary);
+            width: 0%;
+            border-radius: 10px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── Score Card ── */
+        .score-card {
+            background: var(--grad-primary);
+            padding: 2.5rem;
+            border-radius: 20px;
+            color: white;
+            text-align: center;
+            margin-bottom: 2rem;
+            display: none;
+            box-shadow: 0 15px 40px rgba(244, 114, 141, 0.3);
+        }
+
+        .score-card.active {
+            display: block;
+            animation: fadeSlideIn 0.6s ease;
+        }
+
+        .score-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .score-number {
+            font-size: 5rem;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 0.5rem;
+        }
+
+        .score-message {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* ── Question Card ── */
+        .question-card {
+            background: rgba(255, 255, 255, 0.7);
+            border-left: 4px solid var(--terracotta);
+            padding: 2rem;
+            border-radius: 0 16px 16px 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .question-number {
+            background: var(--grad-primary);
+            color: white;
+            padding: 0.35rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .question-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            color: var(--secondary);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 1.2rem;
+            border: 2px solid var(--glass-border);
+            border-radius: 16px;
+            font-size: 1rem;
+            font-family: 'Outfit', sans-serif;
+            resize: vertical;
+            min-height: 150px;
+            margin-bottom: 1.25rem;
+            background: rgba(255, 255, 255, 0.6);
+            color: var(--secondary);
+            transition: all 0.3s ease;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: var(--terracotta);
+            box-shadow: 0 0 0 4px rgba(244, 114, 141, 0.12);
+            background: white;
+        }
+
+        .answer-input::placeholder {
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .submit-btn,
+        .next-btn,
+        .final-score-btn {
+            color: white;
+            padding: 0.9rem 2.5rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(244, 114, 141, 0.25);
+        }
+
+        .submit-btn {
+            background: var(--grad-primary);
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.25);
+        }
+
+        .final-score-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.25);
+            margin: 1.5rem auto;
+            display: none;
+        }
+
+        .submit-btn:hover,
+        .next-btn:hover,
+        .final-score-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:disabled,
+        .next-btn:disabled {
+            background: #ddd;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* ── Feedback ── */
+        .feedback-section {
+            margin-top: 1.5rem;
+            background: rgba(244, 114, 141, 0.06);
+            border-left: 4px solid var(--terracotta);
+            padding: 1.5rem;
+            border-radius: 0 12px 12px 0;
+            display: none;
+        }
+
+        .feedback-section.active {
+            display: block;
+            animation: fadeSlideIn 0.4s ease;
+        }
+
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feedback-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .feedback-content {
+            color: var(--secondary);
+            line-height: 1.8;
+            white-space: pre-wrap;
+            font-size: 0.95rem;
+        }
+
+        .rating-badge {
+            display: inline-block;
+            padding: 0.35rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        .rating-excellent {
+            background: rgba(16, 185, 129, 0.15);
+            color: #059669;
+        }
+
+        .rating-good {
+            background: rgba(245, 158, 11, 0.15);
+            color: #d97706;
+        }
+
+        .rating-needs-work {
+            background: rgba(239, 68, 68, 0.15);
+            color: #dc2626;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(244, 114, 141, 0.2);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.08);
+            border-left: 4px solid #ef4444;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.25rem;
+            border-radius: 0 12px 12px 0;
+            color: #ef4444;
+            font-weight: 500;
+            display: none;
+        }
+
+        .error-message.active {
+            display: block;
+            animation: fadeSlideIn 0.3s ease;
+        }
+
+        .all-done-box {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .all-done-box h3 {
+            color: #059669;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .all-done-box p {
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="bg"></canvas>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-area" onclick="window.location.href='index.html'" style="cursor: pointer;">
+                <img src="logo1.jpeg" alt="Her Way Logo" class="logo">
+                <div class="logo-text-group">
+                    <span class="brand-name" data-i18n="brand_name">Her Way</span>
+                    <span class="tagline" data-i18n="tagline_main">"Empower. Equip. Elevate."</span>
+                </div>
+            </div>
+            <nav class="header-nav">
+                <button class="nav-tab" onclick="window.location.href='index.html'" data-i18n="home_btn">Home</button>
+            </nav>
+            <div class="header-icons">
+                <button class="nav-icon-btn profile-trigger" onclick="window.location.href='profile.html'">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="interview-container">
+
+            <!-- Hero -->
+            <div class="interview-hero">
+                <div class="glow"></div>
+                <img src="logo1.jpeg" alt="AI Interviewer">
+            </div>
+
+            <h1 class="interview-title">🎯 Interview Wings</h1>
+            <p class="interview-subtitle">Answer one question at a time, just like a real interview</p>
+
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+                <div class="progress-text">
+                    <span id="currentQuestionDisplay">Question 1 of 6</span>
+                    <span id="scoreDisplay">Score: --/100</span>
+                </div>
+            </div>
+
+            <!-- Score Card -->
+            <div class="score-card" id="scoreCard">
+                <div class="score-title">Your Interview Readiness Score</div>
+                <div class="score-number" id="finalScore">0</div>
+                <div class="score-message" id="scoreMessage"></div>
+            </div>
+
+            <div class="error-message" id="errorMessage"></div>
+
+            <!-- Question Container -->
+            <div id="questionContainer"></div>
+
+            <!-- Final Score Button -->
+            <button class="final-score-btn" id="finalScoreBtn" onclick="showFinalScore()" style="display: none;">View
+                Your Final Score ✨</button>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+        // ── Secure: All Gemini calls routed through backend proxy ──
+        const API_BASE = window.location.hostname === 'localhost'
+            ? 'http://localhost:5000'
+            : '';
+
+        async function callGemini(prompt, maxOutputTokens = 500, temperature = 0.4) {
+            const response = await fetch(`${API_BASE}/api/gemini/generate`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt, maxOutputTokens, temperature })
+            });
+            if (!response.ok) throw new Error(`Server error: ${response.status}`);
+            const data = await response.json();
+            return data.text || '';
+        }
+
+        // Interview questions
+        const questions = [
+            {
+                id: 1,
+                text: "Tell me about yourself and why you're interested in this role?",
+                keyPoints: ['professional background', 'skills', 'achievements', 'career goals', 'company interest']
+            },
+            {
+                id: 2,
+                text: "What are your greatest strengths and weaknesses?",
+                keyPoints: ['strengths relevant to job', 'honest weakness', 'improvement efforts', 'self-awareness']
+            },
+            {
+                id: 3,
+                text: "Describe a challenging situation at work and how you handled it.",
+                keyPoints: ['situation', 'task', 'action', 'result', 'learning']
+            },
+            {
+                id: 4,
+                text: "Where do you see yourself in 5 years?",
+                keyPoints: ['career growth', 'skill development', 'ambition', 'realistic', 'company commitment']
+            },
+            {
+                id: 5,
+                text: "Why should we hire you over other candidates?",
+                keyPoints: ['unique skills', 'value proposition', 'experience', 'passion', 'cultural fit']
+            },
+            {
+                id: 6,
+                text: "Tell me about a time you worked in a team and faced a conflict.",
+                keyPoints: ['conflict description', 'resolution approach', 'communication', 'collaboration', 'outcome']
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let answers = {};
+        let scores = {};
+        let feedbacks = {};
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadQuestion(currentQuestionIndex);
+        });
+
+        function loadQuestion(index) {
+            if (index >= questions.length) {
+                document.getElementById('finalScoreBtn').style.display = 'block';
+                document.getElementById('questionContainer').innerHTML = `
+                    <div class="all-done-box">
+                        <h3>✓ All Questions Answered!</h3>
+                        <p>Click the button below to see your final interview readiness score.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const question = questions[index];
+
+            const html = `
+                <div class="question-card">
+                    <div class="question-header">
+                        <span class="question-number">Question ${index + 1} of ${questions.length}</span>
+                    </div>
+                    <div class="question-text">${question.text}</div>
+                    <textarea class="answer-input" id="answerInput" placeholder="Type your answer here..." ${answers[question.id] ? 'disabled' : ''}>${answers[question.id] || ''}</textarea>
+
+                    <div class="button-group">
+                        ${!answers[question.id]
+                    ? `<button class="submit-btn" onclick="submitAnswer()">Submit Answer</button>`
+                    : `<button class="next-btn" onclick="nextQuestion()">Next Question →</button>`
+                }
+                    </div>
+
+                    <div class="feedback-section ${feedbacks[question.id] ? 'active' : ''}" id="feedbackSection">
+                        <div class="feedback-header">
+                            <span>👔 Interviewer's Feedback</span>
+                        </div>
+                        <div class="feedback-content" id="feedbackContent">${feedbacks[question.id] || ''}</div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('questionContainer').innerHTML = html;
+            updateProgress();
+        }
+
+        async function submitAnswer() {
+            const answer = document.getElementById('answerInput').value.trim();
+            const question = questions[currentQuestionIndex];
+
+            if (!answer) {
+                showError('Please type your answer before submitting.');
+                return;
+            }
+
+            if (answer.length < 20) {
+                showError('Please provide a more detailed answer (at least 20 characters).');
+                return;
+            }
+
+            const submitBtn = document.querySelector('.submit-btn');
+            submitBtn.innerHTML = '<span class="loading-spinner"></span> Evaluating...';
+            submitBtn.disabled = true;
+
+            try {
+                const prompt = `You are a professional interviewer. Evaluate this interview answer and provide a score out of 100.
+
+Question: "${question.text}"
+
+Answer: "${answer}"
+
+Provide your response in this exact format:
+
+SCORE: [number out of 100]
+
+RATING: [Excellent/Good/Needs Improvement]
+
+STRENGTHS:
+• [Point 1]
+• [Point 2]
+• [Point 3]
+
+AREAS FOR IMPROVEMENT:
+• [Point 1]
+• [Point 2]
+• [Point 3]
+
+TIPS:
+• [Tip 1]
+• [Tip 2]`;
+
+                const feedback = await callGemini(prompt, 500, 0.4);
+
+                if (!feedback) throw new Error('No feedback generated');
+
+                const scoreMatch = feedback.match(/SCORE:\s*(\d+)/i);
+                let score = 0;
+                if (scoreMatch && scoreMatch[1]) {
+                    score = parseInt(scoreMatch[1]);
+                } else {
+                    score = calculateFallbackScore(answer, question.keyPoints);
+                }
+
+                answers[question.id] = answer;
+                scores[question.id] = score;
+
+                const formattedFeedback = feedback.replace(/\n/g, '<br>');
+                feedbacks[question.id] = formattedFeedback;
+
+                updateScoreDisplay();
+                loadQuestion(currentQuestionIndex);
+
+            } catch (error) {
+                console.error('Error:', error);
+
+                const score = calculateFallbackScore(answer, question.keyPoints);
+                const feedback = generateFallbackFeedback(answer, question, score);
+
+                answers[question.id] = answer;
+                scores[question.id] = score;
+                feedbacks[question.id] = feedback;
+
+                updateScoreDisplay();
+                loadQuestion(currentQuestionIndex);
+            }
+        }
+
+        function calculateFallbackScore(answer, keyPoints) {
+            const answerLower = answer.toLowerCase();
+            let score = 0;
+
+            const wordCount = answer.split(' ').length;
+            if (wordCount > 150) score += 30;
+            else if (wordCount > 100) score += 25;
+            else if (wordCount > 70) score += 20;
+            else if (wordCount > 40) score += 15;
+            else score += 10;
+
+            const matchedPoints = keyPoints.filter(point =>
+                answerLower.includes(point.toLowerCase().split(' ')[0])
+            ).length;
+            score += Math.min(50, (matchedPoints / keyPoints.length) * 50);
+
+            const sentences = answer.split(/[.!?]+/).filter(s => s.trim().length > 0);
+            if (sentences.length >= 4) score += 20;
+            else if (sentences.length >= 3) score += 15;
+            else if (sentences.length >= 2) score += 10;
+            else score += 5;
+
+            return Math.min(100, Math.round(score));
+        }
+
+        function generateFallbackFeedback(answer, question, score) {
+            const wordCount = answer.split(' ').length;
+            const sentences = answer.split(/[.!?]+/).filter(s => s.trim().length > 0);
+
+            let fb = '';
+            if (score >= 80) fb += '<span class="rating-badge rating-excellent">RATING: Excellent</span><br>';
+            else if (score >= 60) fb += '<span class="rating-badge rating-good">RATING: Good</span><br>';
+            else fb += '<span class="rating-badge rating-needs-work">RATING: Needs Improvement</span><br>';
+
+            fb += `<strong>SCORE: ${score}/100</strong><br><br>`;
+            fb += '<strong>STRENGTHS:</strong><br>';
+            if (wordCount > 100) fb += '• Good length and detail<br>';
+            if (sentences.length >= 3) fb += '• Clear structure<br>';
+            if (answer.toLowerCase().includes('example')) fb += '• Used examples<br>';
+            fb += '<br><strong>AREAS FOR IMPROVEMENT:</strong><br>';
+            if (wordCount < 70) fb += '• Add more detail<br>';
+            if (sentences.length < 3) fb += '• Structure your answer better<br>';
+            fb += '<br><strong>TIPS:</strong><br>';
+            fb += '• Use the STAR method (Situation, Task, Action, Result)<br>';
+            fb += '• Include specific examples from your experience<br>';
+            return fb;
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion(currentQuestionIndex);
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('currentQuestionDisplay').textContent =
+                `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+        }
+
+        function updateScoreDisplay() {
+            const answeredScores = Object.values(scores);
+            if (answeredScores.length > 0) {
+                const avg = Math.round(answeredScores.reduce((a, b) => a + b, 0) / answeredScores.length);
+                document.getElementById('scoreDisplay').textContent = `Current Avg: ${avg}/100`;
+            }
+        }
+
+        function showFinalScore() {
+            if (Object.keys(scores).length < questions.length) {
+                showError('Please answer all questions first.');
+                return;
+            }
+
+            const totalScore = Object.values(scores).reduce((a, b) => a + b, 0);
+            const avg = Math.round(totalScore / questions.length);
+
+            document.getElementById('finalScore').textContent = avg;
+
+            let message = '';
+            if (avg >= 90) message = '🌟 Outstanding! You are extremely well-prepared for interviews.';
+            else if (avg >= 80) message = '👍 Very good! You are well-prepared for most interviews.';
+            else if (avg >= 70) message = '📈 Good job! Practice more on your weaker areas.';
+            else if (avg >= 60) message = '💪 You\'re on the right track. Keep practicing!';
+            else message = '🎯 Keep practicing! Focus on structure and examples.';
+
+            document.getElementById('scoreMessage').textContent = message;
+            document.getElementById('scoreCard').classList.add('active');
+            document.getElementById('finalScoreBtn').style.display = 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('active');
+            setTimeout(() => errorDiv.classList.remove('active'), 3000);
+        }
+    </script>
+</body>
+
+</html>

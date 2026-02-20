@@ -49,22 +49,6 @@
         </section>
 
 
-        <section class="career-pathway-section" style="max-width: 800px; margin: 0 auto 4rem; text-align: center;">
-            <div class="search-container">
-                <div class="input-wrapper">
-                    <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                        stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                    </svg>
-                    <input type="text" id="career-search-input" class="luxury-input"
-                        placeholder="Search your dream career (e.g. Tailoring, Data Entry)..."
-                        data-i18n-placeholder="search_placeholder">
-                </div>
-                <button id="career-search-btn" class="grad-btn" style="margin-top: 1rem; padding: 1rem 2rem;"
-                    data-i18n="find_path_btn">Find My Path</button>
-            </div>
-        </section>
 
         <section class="quick-actions" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
             <button class="action-card glass-card skill-gap-trigger">
@@ -93,20 +77,34 @@
                 <h3 style="margin-bottom: 0.5rem;" data-i18n="career_pathway_title">Career Pathway</h3>
                 <p style="font-size: 0.9rem; opacity: 0.7;">Visualize your interactive journey from beginner to expert.
                 </p>
-            </button>
+                <button class="action-card glass-card" onclick="window.location.href='confidence-checker.html'">
+                    <div class="action-icon-bg"
+                        style="background: var(--grad-primary); padding: 1.5rem; border-radius: 20px; color: white; margin-bottom: 1rem; display: inline-block;">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-8">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z" />
+                        </svg>
+                    </div>
+                    <h3 style="margin-bottom: 0.5rem;">Interview Wings</h3>
+                    <p style="font-size: 0.9rem; opacity: 0.7;">Practice real interview questions & get AI-powered
+                        feedback.
+                    </p>
+                </button>
 
-            <button class="action-card glass-card barter-btn-trigger">
-                <div class="action-icon-bg"
-                    style="background: var(--grad-secondary); padding: 1.5rem; border-radius: 20px; color: white; margin-bottom: 1rem; display: inline-block;">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="size-8">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 0 0 3.7 3.7 48.656 48.656 0 0 0 7.324 0 4.006 4.006 0 0 0 3.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3-3 3" />
-                    </svg>
-                </div>
-                <h3 data-i18n="skill_exchange" style="margin-bottom: 0.5rem;">Skill Exchange</h3>
-                <p style="font-size: 0.9rem; opacity: 0.7;">Swap your skills with other sisters in the community.</p>
-            </button>
+                <button class="action-card glass-card barter-btn-trigger">
+                    <div class="action-icon-bg"
+                        style="background: var(--grad-secondary); padding: 1.5rem; border-radius: 20px; color: white; margin-bottom: 1rem; display: inline-block;">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-8">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 0 0 3.7 3.7 48.656 48.656 0 0 0 7.324 0 4.006 4.006 0 0 0 3.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3-3 3" />
+                        </svg>
+                    </div>
+                    <h3 data-i18n="skill_exchange" style="margin-bottom: 0.5rem;">Skill Exchange</h3>
+                    <p style="font-size: 0.9rem; opacity: 0.7;">Swap your skills with other sisters in the community.
+                    </p>
+                </button>
 
         </section>
     </main>
