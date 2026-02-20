@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - HerWay</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <canvas id="bg"></canvas>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-area">
+                <img src="logo1.jpeg" alt="Her Way Logo" class="logo">
+                <div class="logo-text-group">
+                    <span class="brand-name" data-i18n="brand_name">Her Way</span>
+                    <span class="tagline" data-i18n="tagline_main">"Empower. Equip. Elevate."</span>
+                </div>
+            </div>
+            <nav class="header-nav">
+                <button class="nav-tab" onclick="window.location.href='index.html'" data-i18n="home_btn">Home</button>
+            </nav>
+            <div class="header-icons">
+                <div id="google_translate_element"></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="glass-card" style="max-width: 400px; margin: 4rem auto; padding: 3rem; text-align: center;">
+            <div class="logo-wrapper" style="margin: 0 auto 1.5rem;">
+                <img src="logo1.jpeg" alt="Her Way Logo" class="brand-logo">
+            </div>
+            <h2 class="logo-text" style="font-size: 1.8rem; margin-bottom: 0.5rem;">Her Way</h2>
+            <p class="tagline" style="margin-bottom: 2rem;">"Empower. Equip. Elevate."</p>
+
+            <form id="login-form" class="auth-form">
+                <div class="input-group">
+                    <label for="email" data-i18n="email_label">Email Address</label>
+                    <input type="email" id="email" placeholder="john@example.com" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="password" data-i18n="password_label">Password</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="btn-primary" style="width: 100%; margin: 1.5rem 0;">
+                    <span data-i18n="btn_signin">Sign In</span>
+                </button>
+
+                <p class="form-footer">
+                    <span data-i18n="no_account">New to HerWay?</span>
+                    <a href="#" data-i18n="apply_membership">Apply for membership</a>
+                </p>
+
+                <p class="section-subtitle" style="margin-top: 1.5rem; font-size: 0.9rem;">
+                    <em>For testing: Use email: john@example.com and password: 1234567890</em>
+                </p>
+            </form>
+        </div>
+    </main>
+
+    <script type="module" src="app.js"></script>
+</body>
+
+</html>

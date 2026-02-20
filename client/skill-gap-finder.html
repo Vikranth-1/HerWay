@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HerWay | Skill Gap Finder</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ── Assessment Styles ── */
+        .assessment-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 3rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+        }
+
+        .greeting-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .greeting-text {
+            font-family: 'Playfair Display', serif;
+            color: var(--terracotta);
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            min-height: 60px;
+            line-height: 1.5;
+        }
+
+        .start-button {
+            background: var(--grad-primary);
+            color: white;
+            padding: 1rem 3rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 25px rgba(244, 114, 141, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        .start-button:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 12px 35px rgba(244, 114, 141, 0.4);
+        }
+
+        .start-button:active {
+            transform: translateY(0) scale(1);
+        }
+
+        /* ── Assessment Section ── */
+        .assessment-section {
+            display: none;
+        }
+
+        .assessment-section.active {
+            display: block;
+            animation: fadeSlideIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(244, 114, 141, 0.15);
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--grad-primary);
+            width: 0%;
+            border-radius: 10px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .question-counter {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .question-text {
+            color: var(--secondary);
+            font-family: 'Playfair Display', serif;
+            font-size: 1.35rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            line-height: 1.7;
+        }
+
+        .answer-area {
+            margin-bottom: 2rem;
+        }
+
+        .answer-label {
+            font-weight: 700;
+            color: var(--terracotta);
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 1.2rem;
+            border: 2px solid var(--glass-border);
+            border-radius: 16px;
+            font-size: 1rem;
+            font-family: 'Outfit', sans-serif;
+            resize: vertical;
+            min-height: 120px;
+            background: rgba(255, 255, 255, 0.6);
+            color: var(--secondary);
+            transition: all 0.3s ease;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: var(--terracotta);
+            box-shadow: 0 0 0 4px rgba(244, 114, 141, 0.12);
+            background: white;
+        }
+
+        .answer-input::placeholder {
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+
+        .submit-button {
+            background: var(--grad-primary);
+            color: white;
+            padding: 0.9rem 2.5rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 0.75rem;
+            box-shadow: 0 6px 20px rgba(244, 114, 141, 0.25);
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(244, 114, 141, 0.35);
+        }
+
+        .submit-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* ── Answer Display ── */
+        .answer-display {
+            background: rgba(244, 114, 141, 0.06);
+            border-left: 4px solid var(--terracotta);
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 1.25rem;
+            border-radius: 0 12px 12px 0;
+            display: none;
+        }
+
+        .answer-display.active {
+            display: block;
+            animation: fadeSlideIn 0.3s ease;
+        }
+
+        .answer-display-label {
+            font-weight: 700;
+            color: var(--terracotta);
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .answer-display-content {
+            color: var(--secondary);
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+        /* ── Assessment Result ── */
+        .assessment-result {
+            background: rgba(16, 185, 129, 0.08);
+            border-left: 4px solid var(--success);
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 1.25rem;
+            border-radius: 0 12px 12px 0;
+            display: none;
+        }
+
+        .assessment-result.active {
+            display: block;
+            animation: fadeSlideIn 0.3s ease;
+        }
+
+        .assessment-result.incorrect {
+            background: rgba(239, 68, 68, 0.08);
+            border-left-color: #ef4444;
+        }
+
+        .assessment-label {
+            font-weight: 700;
+            color: var(--success);
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .assessment-result.incorrect .assessment-label {
+            color: #ef4444;
+        }
+
+        .assessment-content {
+            color: var(--secondary);
+            line-height: 1.7;
+            white-space: pre-wrap;
+            font-size: 0.95rem;
+        }
+
+        .feedback-text {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 0.75rem;
+            font-style: italic;
+        }
+
+        /* ── Buttons ── */
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .next-button {
+            background: var(--grad-primary);
+            color: white;
+            padding: 0.8rem 2.5rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(244, 114, 141, 0.25);
+        }
+
+        .next-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(244, 114, 141, 0.35);
+        }
+
+        .next-button:disabled {
+            background: #ddd;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* ── Results Section ── */
+        .results-section {
+            display: none;
+            text-align: center;
+        }
+
+        .results-section.active {
+            display: block;
+            animation: fadeSlideIn 0.6s ease;
+        }
+
+        .score-display {
+            font-size: 5rem;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            background: var(--grad-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 2rem 0;
+        }
+
+        .score-label {
+            font-size: 1.5rem;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .score-description {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .results-button {
+            background: var(--grad-primary);
+            color: white;
+            padding: 1rem 3rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(244, 114, 141, 0.3);
+        }
+
+        .results-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(244, 114, 141, 0.4);
+        }
+
+        /* ── Loading ── */
+        .loading-spinner {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            border: 3px solid rgba(244, 114, 141, 0.2);
+            border-top: 3px solid var(--terracotta);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0.75rem 0;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ── Error ── */
+        .error-message {
+            background: rgba(239, 68, 68, 0.08);
+            border-left: 4px solid #ef4444;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.25rem;
+            border-radius: 0 12px 12px 0;
+            color: #ef4444;
+            font-weight: 500;
+            display: none;
+        }
+
+        .error-message.active {
+            display: block;
+            animation: fadeSlideIn 0.3s ease;
+        }
+
+        /* ── Hero Agent ── */
+        .agent-hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .agent-hero .glow {
+            width: 140px;
+            height: 140px;
+            background: var(--grad-primary);
+            border-radius: 50%;
+            margin: 0 auto;
+            filter: blur(20px);
+            opacity: 0.5;
+            animation: pulse 3s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.7;
+            }
+        }
+
+        .agent-hero img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin-top: -130px;
+            position: relative;
+            border: 4px solid white;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="bg"></canvas>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-area" onclick="window.location.href='index.html'" style="cursor: pointer;">
+                <img src="logo1.jpeg" alt="Her Way Logo" class="logo">
+                <div class="logo-text-group">
+                    <span class="brand-name" data-i18n="brand_name">Her Way</span>
+                    <span class="tagline" data-i18n="tagline_main">"Empower. Equip. Elevate."</span>
+                </div>
+            </div>
+            <nav class="header-nav">
+                <button class="nav-tab" onclick="window.location.href='index.html'" data-i18n="home_btn">Home</button>
+            </nav>
+            <div class="header-icons">
+                <button class="nav-icon-btn profile-trigger" onclick="window.location.href='profile.html'">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="assessment-container">
+
+            <!-- Agent Hero -->
+            <div class="agent-hero">
+                <div class="glow"></div>
+                <img src="logo1.jpeg" alt="AI Agent">
+            </div>
+
+            <h2 style="text-align: center; font-family: 'Playfair Display', serif; font-size: 2.2rem; color: var(--secondary); margin-bottom: 0.5rem;"
+                data-i18n="skill_gap_finder_title">Skill Gap Finder</h2>
+            <p style="text-align: center; color: var(--text-muted); margin-bottom: 2rem;">Powered by AI — Discover your
+                strengths & areas to grow</p>
+
+            <!-- Greeting Section -->
+            <div class="greeting-section" id="greetingSection">
+                <div class="greeting-text" id="greetingText">Loading greeting...</div>
+                <button class="start-button" id="startBtn" onclick="startAssessment()">Start Assessment</button>
+            </div>
+
+            <!-- Assessment Section -->
+            <div class="assessment-section" id="assessmentSection">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+
+                <div class="question-counter" id="questionCounter">Question 1 of 10</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+
+                <div class="error-message" id="errorMessage"></div>
+
+                <div class="answer-area">
+                    <div class="answer-label">Your Answer:</div>
+                    <textarea class="answer-input" id="answerInput" placeholder="Type your answer here..."></textarea>
+                    <button class="submit-button" id="submitBtn" onclick="submitAnswer()">Submit Answer</button>
+                </div>
+
+                <div class="answer-display" id="answerDisplay">
+                    <div class="answer-display-label">Your Answer:</div>
+                    <div class="answer-display-content" id="answerContent"></div>
+                </div>
+
+                <div class="assessment-result" id="assessmentResult">
+                    <div class="assessment-label" id="assessmentLabel">Assessment:</div>
+                    <div class="assessment-content" id="assessmentContent"></div>
+                    <div class="feedback-text" id="feedbackText"></div>
+                </div>
+
+                <div class="button-group">
+                    <button class="next-button" id="nextBtn" disabled onclick="nextQuestion()">Next Question →</button>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-section" id="resultsSection">
+                <h2
+                    style="color: var(--terracotta); margin-bottom: 1.5rem; font-family: 'Playfair Display', serif; font-size: 2rem;">
+                    Assessment Complete! 🎉</h2>
+                <div class="score-label">Your Score</div>
+                <div class="score-display" id="finalScore">0%</div>
+                <div class="score-description" id="scoreDescription">
+                    Great effort! Check your detailed results below.
+                </div>
+                <button class="results-button" onclick="window.location.href='index.html'">Back to Home</button>
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+        // ── Secure: All Gemini calls routed through backend proxy ──
+        const API_BASE = window.location.hostname === 'localhost'
+            ? 'http://localhost:5000'
+            : '';
+
+        async function callGemini(prompt, maxOutputTokens = 200, temperature = 0.7) {
+            const response = await fetch(`${API_BASE}/api/gemini/generate`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt, maxOutputTokens, temperature })
+            });
+            if (!response.ok) throw new Error(`Server error: ${response.status}`);
+            const data = await response.json();
+            return data.text || '';
+        }
+
+        let currentQuestion = 0;
+        let totalQuestions = 10;
+        let score = 0;
+        let assessmentAnswers = [];
+
+        // Predefined questions and answers for fallback
+        const questionBank = [
+            {
+                question: "What is object-oriented programming?",
+                keywords: ["class", "object", "inheritance", "polymorphism", "encapsulation"],
+                idealAnswer: "Object-oriented programming is a programming paradigm that uses objects and classes."
+            },
+            {
+                question: "Explain the difference between HTTP and HTTPS.",
+                keywords: ["secure", "ssl", "tls", "encryption", "certificate"],
+                idealAnswer: "HTTPS is the secure version of HTTP using SSL/TLS encryption."
+            },
+            {
+                question: "What is version control and why is it important?",
+                keywords: ["git", "track", "changes", "collaboration", "history", "branch"],
+                idealAnswer: "Version control tracks changes to code over time for collaboration and history."
+            },
+            {
+                question: "Explain what a database index is.",
+                keywords: ["performance", "speed", "query", "search", "data structure"],
+                idealAnswer: "A database index improves the speed of data retrieval operations."
+            },
+            {
+                question: "What is responsive web design?",
+                keywords: ["mobile", "adaptive", "flexible", "media queries", "viewport"],
+                idealAnswer: "Responsive design makes pages render well on different devices using flexible layouts."
+            },
+            {
+                question: "What is machine learning?",
+                keywords: ["algorithm", "data", "pattern", "prediction", "model", "training"],
+                idealAnswer: "Machine learning is a branch of AI where systems learn from data to make predictions."
+            },
+            {
+                question: "What is the purpose of an API?",
+                keywords: ["interface", "communication", "request", "response", "endpoint"],
+                idealAnswer: "An API allows different software applications to communicate with each other."
+            },
+            {
+                question: "What is cloud computing?",
+                keywords: ["server", "storage", "internet", "scalable", "on-demand"],
+                idealAnswer: "Cloud computing delivers computing services over the internet on demand."
+            },
+            {
+                question: "What is data privacy?",
+                keywords: ["personal", "protection", "consent", "security", "regulation"],
+                idealAnswer: "Data privacy is the proper handling and protection of personal information."
+            },
+            {
+                question: "What is the importance of soft skills in the workplace?",
+                keywords: ["communication", "teamwork", "leadership", "adaptability", "problem-solving"],
+                idealAnswer: "Soft skills like communication and teamwork are essential for workplace success."
+            }
+        ];
+
+        // Initialize greeting on page load
+        window.addEventListener('load', async () => {
+            await generateGreeting();
+        });
+
+        async function generateGreeting() {
+            try {
+                const prompt = "Generate a warm, encouraging greeting welcoming a woman to a skill assessment test. Keep it short (1-2 sentences) and motivational. Just return the greeting text only, no additional text.";
+                const greeting = await callGemini(prompt, 100, 0.7);
+                document.getElementById('greetingText').textContent = greeting || "Welcome to the Skill Gap Assessment! Let's discover your potential.";
+            } catch (error) {
+                console.error('Error generating greeting:', error);
+                document.getElementById('greetingText').textContent = "Welcome, Queen! Ready to discover your strengths? Let's begin! ✨";
+            }
+        }
+
+        function startAssessment() {
+            document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('greetingText').style.display = 'none';
+            document.getElementById('assessmentSection').classList.add('active');
+            generateQuestion();
+        }
+
+        async function generateQuestion() {
+            try {
+                document.getElementById('questionText').innerHTML = '<div class="loading-spinner"></div>';
+                document.getElementById('answerInput').value = '';
+                document.getElementById('submitBtn').disabled = false;
+                document.getElementById('answerInput').disabled = false;
+
+                const prompt = "Generate ONE professional skill assessment question. The question should be about professional skills, technology, business, or workplace knowledge. It must be clear and answerable in 2-3 sentences. Do NOT include explanations or labels like 'Question:'. Just return the question text only.";
+                const question = await callGemini(prompt, 100, 0.7);
+
+                if (!question || question.trim() === '') {
+                    throw new Error('Empty response');
+                }
+
+                document.getElementById('questionText').textContent = question;
+                updateProgressBar();
+                resetAnswer();
+            } catch (error) {
+                console.error('Error generating question:', error);
+                document.getElementById('questionText').textContent = questionBank[currentQuestion % questionBank.length].question;
+                updateProgressBar();
+                resetAnswer();
+            }
+        }
+
+        function submitAnswer() {
+            const answer = document.getElementById('answerInput').value.trim();
+
+            if (!answer) {
+                showError('Please enter an answer before submitting.');
+                return;
+            }
+
+            if (answer.length < 10) {
+                showError('Please provide a more detailed answer (at least 10 characters).');
+                return;
+            }
+
+            document.getElementById('answerInput').disabled = true;
+            document.getElementById('submitBtn').disabled = true;
+
+            document.getElementById('answerContent').textContent = answer;
+            document.getElementById('answerDisplay').classList.add('active');
+
+            document.getElementById('assessmentContent').innerHTML = '<div class="loading-spinner"></div> Evaluating your answer...';
+            document.getElementById('assessmentResult').classList.add('active');
+            document.getElementById('assessmentResult').classList.remove('incorrect');
+
+            assessAnswer(answer);
+        }
+
+        async function assessAnswer(answer) {
+            try {
+                const question = document.getElementById('questionText').textContent;
+
+                const prompt = `You are an expert interviewer evaluating a candidate's answer.
+
+Question: "${question}"
+
+Candidate's Answer: "${answer}"
+
+Evaluate this answer based on:
+1. Accuracy - Is the information correct?
+2. Completeness - Does it fully answer the question?
+3. Relevance - Is it directly related to the question?
+4. Clarity - Is it well-explained?
+
+First line must be either "CORRECT" if the answer is satisfactory, or "INCORRECT" if it's wrong or incomplete.
+Then provide a brief, constructive feedback (2-3 sentences) explaining why and how to improve.
+Be fair but honest in your evaluation.`;
+
+                const assessment = await callGemini(prompt, 200, 0.3);
+
+                if (!assessment) throw new Error('No assessment generated');
+
+                const isCorrect = assessment.toUpperCase().startsWith('CORRECT');
+
+                if (isCorrect) {
+                    score++;
+                    document.getElementById('assessmentResult').classList.remove('incorrect');
+                    document.getElementById('assessmentLabel').textContent = '✓ Correct!';
+                } else {
+                    document.getElementById('assessmentResult').classList.add('incorrect');
+                    document.getElementById('assessmentLabel').textContent = '✗ Needs Improvement';
+                }
+
+                document.getElementById('assessmentContent').textContent = assessment;
+                document.getElementById('nextBtn').disabled = false;
+
+                assessmentAnswers.push({ question, answer, assessment, isCorrect });
+
+            } catch (error) {
+                console.error('Error assessing answer:', error);
+
+                const questionObj = questionBank.find(q => q.question === document.getElementById('questionText').textContent) ||
+                    questionBank[currentQuestion % questionBank.length];
+
+                const answerLower = answer.toLowerCase();
+                const keywordMatches = questionObj.keywords.filter(k => answerLower.includes(k.toLowerCase())).length;
+                const isCorrect = (keywordMatches / questionObj.keywords.length) >= 0.4;
+
+                if (isCorrect) {
+                    score++;
+                    document.getElementById('assessmentResult').classList.remove('incorrect');
+                    document.getElementById('assessmentLabel').textContent = '✓ Good Answer!';
+                    document.getElementById('assessmentContent').textContent =
+                        `Your answer covered ${keywordMatches} out of ${questionObj.keywords.length} key points. Great job! To improve, also consider: ${questionObj.keywords.join(', ')}.`;
+                } else {
+                    document.getElementById('assessmentResult').classList.add('incorrect');
+                    document.getElementById('assessmentLabel').textContent = '✗ Needs More Detail';
+                    document.getElementById('assessmentContent').textContent =
+                        `Your answer covered ${keywordMatches} out of ${questionObj.keywords.length} key points. A stronger answer should include: ${questionObj.keywords.join(', ')}.`;
+                }
+
+                document.getElementById('assessmentResult').classList.add('active');
+                document.getElementById('nextBtn').disabled = false;
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+
+            if (currentQuestion < totalQuestions) {
+                resetAnswer();
+                document.getElementById('answerDisplay').classList.remove('active');
+                document.getElementById('assessmentResult').classList.remove('active');
+                document.getElementById('nextBtn').disabled = true;
+                document.getElementById('answerInput').disabled = false;
+                document.getElementById('submitBtn').disabled = false;
+                generateQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function updateProgressBar() {
+            const progress = ((currentQuestion) / totalQuestions) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('questionCounter').textContent = `Question ${currentQuestion + 1} of ${totalQuestions}`;
+        }
+
+        function resetAnswer() {
+            document.getElementById('answerInput').value = '';
+            document.getElementById('answerInput').disabled = false;
+            document.getElementById('submitBtn').disabled = false;
+        }
+
+        function showResults() {
+            document.getElementById('assessmentSection').classList.remove('active');
+            document.getElementById('resultsSection').classList.add('active');
+
+            const percentage = Math.round((score / totalQuestions) * 100);
+            document.getElementById('finalScore').textContent = percentage + '%';
+
+            let description = '';
+            if (percentage >= 90) {
+                description = '🌟 Exceptional! You have outstanding knowledge in this area. You\'re ready to lead!';
+            } else if (percentage >= 70) {
+                description = '💪 Great job! You have a solid foundation. A few more areas to sharpen and you\'ll be unstoppable!';
+            } else if (percentage >= 50) {
+                description = '📚 Good effort! With some focused learning, you\'ll bridge these gaps in no time. Keep going!';
+            } else {
+                description = '🌱 Every expert was once a beginner! Review the fundamentals and come back stronger. We believe in you!';
+            }
+
+            document.getElementById('scoreDescription').textContent = description;
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('active');
+            setTimeout(() => errorDiv.classList.remove('active'), 4000);
+        }
+
+        // Allow Enter key to submit (Shift+Enter for new line)
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' && !event.shiftKey && document.activeElement === document.getElementById('answerInput')) {
+                event.preventDefault();
+                if (!document.getElementById('submitBtn').disabled) {
+                    submitAnswer();
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

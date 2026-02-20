@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat - HerWay</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <canvas id="bg"></canvas>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-area">
+                <img src="logo1.jpeg" alt="Her Way Logo" class="logo">
+                <div class="logo-text-group">
+                    <span class="brand-name" data-i18n="brand_name">Her Way</span>
+                    <span class="tagline" data-i18n="tagline_main">"Empower. Equip. Elevate."</span>
+                </div>
+            </div>
+            <nav class="header-nav">
+                <button class="nav-tab" onclick="window.location.href='index.html'" data-i18n="home_btn">Home</button>
+                <button class="nav-tab" onclick="window.location.href='profile.html'"
+                    data-i18n="profile_title">Profile</button>
+            </nav>
+            <div class="header-icons">
+                <div id="google_translate_element"></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="glass-card" style="padding: 2rem; margin-bottom: 2rem;">
+            <h2>Chat & Connections</h2>
+        </div>
+
+        <div class="chat-tabs" style="display: flex; margin-bottom: 1.5rem;">
+            <button id="chat-tab" class="tab-btn active"
+                style="flex: 1; padding: 1rem; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px 0 0 12px; cursor: pointer; text-align: center; font-weight: 600;">Chat</button>
+            <button id="suggested-tab" class="tab-btn"
+                style="flex: 1; padding: 1rem; background: var(--glass-bg); border: 1px solid var(--glass-border); border-left: none; border-radius: 0 12px 12px 0; cursor: pointer; text-align: center; font-weight: 600;">Suggested
+                Connections</button>
+        </div>
+
+        <div id="chat-section" class="tab-content active" style="margin-bottom: 1.5rem;">
+            <div class="glass-card" style="padding: 1.5rem;">
+                <h3>Your Chats</h3>
+                <div class="chat-list" id="chat-list"
+                    style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
+
+                    <div class="chat-item"
+                        style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: rgba(255,255,255,0.3); border-radius: 12px;">
+                        <div class="chat-user" style="display: flex; align-items: center; gap: 1rem;">
+                            <div class="chat-avatar"
+                                style="width: 40px; height: 40px; background: var(--terracotta); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                                A</div>
+                            <div class="chat-info">
+                                <div class="chat-name" style="font-weight: 600;">Alice Kumar</div>
+                                <div class="chat-preview" style="font-size: 0.9rem; color: var(--text-muted);">Can you
+                                    teach me embroidery?</div>
+                            </div>
+                        </div>
+                        <div class="chat-time" style="font-size: 0.8rem; color: var(--text-muted);">10:30 AM</div>
+                    </div>
+                    <div class="chat-item"
+                        style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: rgba(255,255,255,0.3); border-radius: 12px;">
+                        <div class="chat-user" style="display: flex; align-items: center; gap: 1rem;">
+                            <div class="chat-avatar"
+                                style="width: 40px; height: 40px; background: var(--saree); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                                B</div>
+                            <div class="chat-info">
+                                <div class="chat-name" style="font-weight: 600;">Bob Sharma</div>
+                                <div class="chat-preview" style="font-size: 0.9rem; color: var(--text-muted);">
+                                    Interested in learning organic farming</div>
+                            </div>
+                        </div>
+                        <div class="chat-time" style="font-size: 0.8rem; color: var(--text-muted);">Yesterday</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="suggested-section" class="tab-content" style="display: none;">
+            <div class="glass-card" style="padding: 1.5rem;">
+                <h3>Recommended People to Learn From</h3>
+                <div class="suggested-list" id="suggested-list"
+                    style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
+
+                    <div class="suggested-item"
+                        style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: rgba(255,255,255,0.3); border-radius: 12px;">
+                        <div class="suggested-user" style="display: flex; align-items: center; gap: 1rem;">
+                            <div class="suggested-avatar"
+                                style="width: 40px; height: 40px; background: var(--turmeric); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                                C</div>
+                            <div class="suggested-info">
+                                <div class="suggested-name" style="font-weight: 600;">Charlie Nair</div>
+                                <div class="suggested-skills" style="font-size: 0.9rem;">Computer Basics, Math</div>
+                                <div class="suggested-availability"
+                                    style="font-size: 0.8rem; color: var(--text-muted);">Available: Mon-Fri, 6-8 PM
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn-primary connect-btn"
+                            style="padding: 0.5rem 1rem; font-size: 0.9rem;">Connect</button>
+                    </div>
+                    <div class="suggested-item"
+                        style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: rgba(255,255,255,0.3); border-radius: 12px;">
+                        <div class="suggested-user" style="display: flex; align-items: center; gap: 1rem;">
+                            <div class="suggested-avatar"
+                                style="width: 40px; height: 40px; background: var(--ink); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                                D</div>
+                            <div class="suggested-info">
+                                <div class="suggested-name" style="font-weight: 600;">Diana Pillai</div>
+                                <div class="suggested-skills" style="font-size: 0.9rem;">Classical Dance, Art</div>
+                                <div class="suggested-availability"
+                                    style="font-size: 0.8rem; color: var(--text-muted);">Available: Weekends, 10 AM-12
+                                    PM</div>
+                            </div>
+                        </div>
+                        <button class="btn-primary connect-btn"
+                            style="padding: 0.5rem 1rem; font-size: 0.9rem;">Connect</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatTab = document.getElementById('chat-tab');
+            const suggestedTab = document.getElementById('suggested-tab');
+            const chatSection = document.getElementById('chat-section');
+            const suggestedSection = document.getElementById('suggested-section');
+
+            chatTab.addEventListener('click', () => {
+                chatTab.classList.add('active');
+                suggestedTab.classList.remove('active');
+                chatSection.classList.add('active');
+                suggestedSection.classList.remove('active');
+            });
+
+            suggestedTab.addEventListener('click', () => {
+                suggestedTab.classList.add('active');
+                chatTab.classList.remove('active');
+                suggestedSection.classList.add('active');
+                chatSection.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+
+</html>

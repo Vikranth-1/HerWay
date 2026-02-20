@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course View - HerWay</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <canvas id="bg"></canvas>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-area">
+                <img src="logo1.jpeg" alt="Her Way Logo" class="logo">
+                <div class="logo-text-group">
+                    <span class="brand-name" data-i18n="brand_name">Her Way</span>
+                    <span class="tagline" data-i18n="tagline_main">"Empower. Equip. Elevate."</span>
+                </div>
+            </div>
+            <nav class="header-nav">
+                <button class="nav-tab" onclick="window.location.href='index.html'" data-i18n="home_btn">Home</button>
+                <button class="nav-tab" onclick="window.location.href='profile.html'"
+                    data-i18n="profile_title">Profile</button>
+            </nav>
+            <div class="header-icons">
+                <select id="lang-select" class="nav-icon"
+                    style="border-radius: 8px; padding: 4px 8px; font-size: 0.8rem; cursor: pointer; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--secondary);">
+                    <option value="en">English</option>
+                    <option value="ta">தமிழ்</option>
+                    <option value="hi">हिंदी</option>
+                    <option value="kn">ಕನ್ನಡ</option>
+                    <option value="te">తెలుగు</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="glass-card" style="padding: 2rem;">
+            <div class="course-header">
+                <h2 id="course-title">Computer Literacy 101</h2>
+                <div class="course-rating" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+                    <span class="rating-stars" style="color: gold;">★★★★☆</span>
+                    <span class="rating-value" style="font-weight: 600;">4.2</span>
+                    <span style="color: var(--text-muted);">(128 reviews)</span>
+                </div>
+            </div>
+
+            <div class="course-details"
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1.5rem 0;">
+                <div class="detail-item">
+                    <strong>Platform:</strong> <span id="course-platform">Google Digital Garage</span>
+                </div>
+                <div class="detail-item">
+                    <strong>Duration:</strong> <span id="course-duration">4 Weeks</span>
+                </div>
+                <div class="detail-item">
+                    <strong>Cost:</strong> <span id="course-cost">Free</span>
+                </div>
+                <div class="detail-item">
+                    <strong>Mode:</strong> <span id="course-mode">Online</span>
+                </div>
+            </div>
+
+            <div class="course-description" style="margin: 2rem 0;">
+                <h3>Learnings</h3>
+                <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                    <li>Basic computer operations and file management</li>
+                    <li>Email and internet usage</li>
+                    <li>Word processing and spreadsheet basics</li>
+                    <li>Online safety and security</li>
+                    <li>Digital communication tools</li>
+                </ul>
+            </div>
+
+            <div class="course-curriculum" style="margin: 2rem 0;">
+                <h3>Curriculum</h3>
+                <div style="margin-top: 1rem;">
+                    <details
+                        style="margin-bottom: 0.5rem; background: rgba(255,255,255,0.3); padding: 1rem; border-radius: 12px;">
+                        <summary style="cursor: pointer; font-weight: 600;">Module 1: Introduction to Computers
+                        </summary>
+                        <div style="margin-top: 0.5rem; padding: 0.5rem 0 0 1rem;">
+                            <p>Understanding computer hardware and software basics</p>
+                        </div>
+                    </details>
+                    <details
+                        style="margin-bottom: 0.5rem; background: rgba(255,255,255,0.3); padding: 1rem; border-radius: 12px;">
+                        <summary style="cursor: pointer; font-weight: 600;">Module 2: File Management</summary>
+                        <div style="margin-top: 0.5rem; padding: 0.5rem 0 0 1rem;">
+                            <p>Creating, organizing, and managing files and folders</p>
+                        </div>
+                    </details>
+                    <details
+                        style="margin-bottom: 0.5rem; background: rgba(255,255,255,0.3); padding: 1rem; border-radius: 12px;">
+                        <summary style="cursor: pointer; font-weight: 600;">Module 3: Internet and Email</summary>
+                        <div style="margin-top: 0.5rem; padding: 0.5rem 0 0 1rem;">
+                            <p>Browsing the web and using email effectively</p>
+                        </div>
+                    </details>
+                </div>
+            </div>
+
+            <div class="course-action" style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;">
+                <button class="btn-primary" id="enroll-btn" style="flex: 1; min-width: 200px; padding: 1rem;">Enroll
+                    Now</button>
+                <button class="btn-secondary" id="back-btn" onclick="window.history.back()"
+                    style="flex: 1; min-width: 200px; padding: 1rem;">Back to Courses</button>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="app.js"></script>
+</body>
+
+</html>

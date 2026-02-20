@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HerWay | Career Journey</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap"
+        rel="stylesheet">
+    <style>
+        .roadmap-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            position: relative;
+            padding: 2rem;
+            min-height: 800px;
+        }
+
+        .road-svg {
+            position: absolute;
+            top: 150px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 0;
+            width: 300px;
+            height: 600px;
+            opacity: 0.6;
+        }
+
+        .skill-list {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 60px;
+            align-items: center;
+            margin: 40px 0;
+        }
+
+        .skill-node {
+            background: var(--glass-bg);
+            border: 2px solid var(--terracotta);
+            padding: 1.2rem 2.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-weight: 600;
+            box-shadow: var(--glass-shadow);
+            backdrop-filter: blur(12px);
+            color: var(--secondary);
+            text-align: center;
+            min-width: 250px;
+        }
+
+        .skill-node:hover {
+            background: var(--grad-primary);
+            color: white;
+            transform: scale(1.08) translateY(-5px);
+            border-color: transparent;
+            box-shadow: 0 15px 30px rgba(244, 114, 141, 0.3);
+        }
+
+        #details-box {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            width: 90%;
+            max-width: 500px;
+            background: var(--grad-primary);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 24px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            box-shadow: 0 20px 50px rgba(31, 10, 13, 0.3);
+            z-index: 1000;
+            text-align: center;
+        }
+
+        #details-box.active {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .close-btn {
+            margin-top: 1.5rem;
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .goal-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .goal-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="bg"></canvas>
+
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-area" onclick="window.location.href='index.html'" style="cursor: pointer;">
+                <img src="logo1.jpeg" alt="Her Way Logo" class="logo">
+                <div class="logo-text-group">
+                    <span class="brand-name">Her Way</span>
+                </div>
+            </div>
+            <nav class="header-nav">
+                <button class="nav-tab" onclick="window.location.href='index.html'">Home</button>
+                <button class="nav-tab active">Pathway</button>
+            </nav>
+            <div class="header-icons">
+                <button class="nav-icon-btn profile-trigger" onclick="window.location.href='profile.html'">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="roadmap-container">
+            <div class="goal-header glass-card" style="padding: 2rem;">
+                <span
+                    style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; font-weight: 700; color: var(--terracotta);">Your
+                    Ultimate Journey</span>
+                <h2 class="goal-title" id="goal-text">🎯 Goal: Tailoring Specialist</h2>
+                <p id="goal-subtext" style="color: var(--text-muted);">Mastering the art of design and commerce.</p>
+            </div>
+
+            <svg class="road-svg" viewBox="0 0 100 400">
+                <path d="M50,0 Q90,100 50,200 T50,400" fill="none" stroke="url(#roadGradient)" stroke-width="6"
+                    stroke-dasharray="12" stroke-linecap="round" />
+                <defs>
+                    <linearGradient id="roadGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:var(--terracotta);stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:var(--accent);stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+            </svg>
+
+            <div class="skill-list" id="skill-nodes-container">
+                <!-- Nodes will be injected here or kept static for demo if no goal found -->
+                <div class="skill-node"
+                    onclick="showDetails('Business Mastery', 'Learn how to market your skills, manage finances, and grow your local business.')">
+                    Launch & Growth</div>
+                <div class="skill-node"
+                    onclick="showDetails('Advanced Techniques', 'Master intricate patterns, embroidery, and luxury garment construction.')">
+                    Expert Craftsmanship</div>
+                <div class="skill-node"
+                    onclick="showDetails('Digital Presence', 'Learn to showcase your work on social media and reach clients online.')">
+                    Digital Marketing</div>
+                <div class="skill-node"
+                    onclick="showDetails('Technical Skills', 'Perfecting the foundations of sewing, cutting, and fabric selection.')">
+                    Professional Core</div>
+                <div class="skill-node"
+                    onclick="showDetails('Fundamentals', 'The very beginning: Understanding tools, measurements, and basic design.')">
+                    Foundations</div>
+            </div>
+
+            <footer class="glass-card" style="text-align: center; padding: 1.5rem; margin-top: 4rem;">
+                <h3 style="margin-top: 0; color: var(--secondary); font-size: 1rem;">📍 Your Starting Point</h3>
+                <p id="current-skills-text" style="color: var(--text-muted); font-size: 0.9rem;">Basic Sewing •
+                    Creativity • Determination</p>
+            </footer>
+        </div>
+    </main>
+
+    <div id="details-box">
+        <h3 id="skill-title" style="font-family: 'Playfair Display', serif; font-size: 1.8rem; margin-bottom: 1rem;">
+        </h3>
+        <p id="skill-desc" style="font-size: 1.1rem; line-height: 1.6; opacity: 0.9;"></p>
+        <span class="close-btn" onclick="closeDetails()">Close Exploration</span>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        function showDetails(title, desc) {
+            const box = document.getElementById('details-box');
+            document.getElementById('skill-title').innerText = title;
+            document.getElementById('skill-desc').innerText = desc;
+            box.classList.add('active');
+        }
+
+        function closeDetails() {
+            document.getElementById('details-box').classList.remove('active');
+        }
+
+        // Dynamic adjustment based on current user goal
+        window.addEventListener('load', () => {
+            const user = JSON.parse(localStorage.getItem('herway_user'));
+            if (user && user.career_goal) {
+                document.getElementById('goal-text').innerText = `🎯 Goal: ${user.career_goal}`;
+                document.getElementById('goal-subtext').innerText = `From learning basics to becoming a master ${user.career_goal.toLowerCase()}.`;
+            }
+            if (user && user.skills && user.skills.length > 0) {
+                document.getElementById('current-skills-text').innerText = user.skills.join(' • ');
+            }
+        });
+    </script>
+</body>
+
+</html>

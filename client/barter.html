@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Exchange - HerWay</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <canvas id="bg"></canvas>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-area">
+                <img src="logo1.jpeg" alt="Her Way Logo" class="logo">
+                <div class="logo-text-group">
+                    <span class="brand-name" data-i18n="brand_name">Her Way</span>
+                    <span class="tagline" data-i18n="tagline_main">"Empower. Equip. Elevate."</span>
+                </div>
+            </div>
+            <nav class="header-nav">
+                <button class="nav-tab" onclick="window.location.href='index.html'" data-i18n="home_btn">Home</button>
+                <button class="nav-tab" onclick="window.location.href='profile.html'"
+                    data-i18n="profile_title">Profile</button>
+            </nav>
+            <div class="header-icons">
+                <div id="google_translate_element"></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="glass-card" style="padding: 2rem; margin-bottom: 2rem;">
+            <h2 data-i18n="exchange_skills_title">Exchange Your Skills</h2>
+            <p data-i18n="exchange_skills_sub">"I teach tailoring ↔ You teach smartphone"</p>
+        </div>
+
+        <div class="barter-grid">
+            <div class="glass-card barter-form">
+                <h3 style="margin-bottom: 1.5rem;">Post Your Skill Exchange</h3>
+
+                <div class="input-group" style="margin-bottom: 1rem;">
+                    <label for="teach-skill" data-i18n="label_teach">What can you teach?</label>
+                    <input type="text" id="teach-skill" placeholder="e.g., Tailoring, Cooking..."
+                        style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--glass-bg); font-size: 1rem;">
+                </div>
+
+                <div class="input-group" style="margin-bottom: 1rem;">
+                    <label for="learn-skill" data-i18n="label_learn">What do you want to learn?</label>
+                    <input type="text" id="learn-skill" placeholder="e.g., Computer Basics, English..."
+                        style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--glass-bg); font-size: 1rem;">
+                </div>
+
+                <div class="input-group" style="margin-bottom: 1rem;">
+                    <label for="location" data-i18n="label_location">Location</label>
+                    <input type="text" id="location" placeholder="e.g., Bangalore, India"
+                        style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--glass-bg); font-size: 1rem;">
+                </div>
+
+                <div class="input-group" style="margin-bottom: 1.5rem;">
+                    <label for="teaching-mode" data-i18n="label_mode">Preferred Teaching Mode</label>
+                    <select id="teaching-mode"
+                        style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--glass-bg); font-size: 1rem;">
+                        <option value="In-Person">In-Person</option>
+                        <option value="Online">Online</option>
+                        <option value="Both">Both</option>
+                    </select>
+                </div>
+
+                <button id="find-matches-btn" class="btn-primary"
+                    style="width: 100%; padding: 1rem; font-size: 1.1rem;">
+                    <span data-i18n="btn_find_matches">Find My Matches</span>
+                </button>
+            </div>
+
+            <div class="glass-card barter-results">
+                <div id="matches-list" class="barter-list">
+
+                    <div class="empty-state">
+                        <svg class="empty-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M16.5 12a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM17.25 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                        </svg>
+                        <h4 data-i18n="matches_subtitle">Finding people who want to learn from you...</h4>
+                        <p data-i18n="no_matches_found">No matches found yet — your offer is posted!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="app.js"></script>
+</body>
+
+</html>
