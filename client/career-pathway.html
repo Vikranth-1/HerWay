@@ -11,22 +11,25 @@
         rel="stylesheet">
     <style>
         .roadmap-container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 2rem auto;
             position: relative;
             padding: 2rem;
-            min-height: 800px;
+            min-height: 1200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .road-svg {
             position: absolute;
-            top: 150px;
+            top: 250px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 0;
-            width: 300px;
-            height: 600px;
-            opacity: 0.6;
+            width: 600px;
+            height: 900px;
+            filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.15));
         }
 
         .skill-list {
@@ -34,9 +37,10 @@
             z-index: 1;
             display: flex;
             flex-direction: column;
-            gap: 60px;
-            align-items: center;
-            margin: 40px 0;
+            gap: 100px;
+            padding-top: 120px;
+            width: 100%;
+            max-width: 600px;
         }
 
         .skill-node {
@@ -46,20 +50,58 @@
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            font-weight: 600;
+            font-weight: 700;
             box-shadow: var(--glass-shadow);
             backdrop-filter: blur(12px);
             color: var(--secondary);
             text-align: center;
-            min-width: 250px;
+            min-width: 240px;
+            width: fit-content;
+            position: relative;
+        }
+
+        /* Zig-zag alignment for nodes on the road */
+        .skill-node:nth-child(even) {
+            align-self: flex-end;
+            margin-right: 50px;
+        }
+
+        .skill-node:nth-child(odd) {
+            align-self: flex-start;
+            margin-left: 50px;
+        }
+
+        .skill-node:first-child {
+            align-self: center;
+            margin: 0;
+        }
+
+        .skill-node:last-child {
+            align-self: center;
+            margin: 0;
         }
 
         .skill-node:hover {
             background: var(--grad-primary);
             color: white;
-            transform: scale(1.08) translateY(-5px);
+            transform: scale(1.1) translateY(-8px);
             border-color: transparent;
-            box-shadow: 0 15px 30px rgba(244, 114, 141, 0.3);
+            box-shadow: 0 20px 40px rgba(244, 114, 141, 0.4);
+        }
+
+        .skill-node::after {
+            content: '📍';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.2rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .skill-node:hover::after {
+            opacity: 1;
         }
 
         #details-box {
@@ -105,12 +147,13 @@
 
         .goal-header {
             text-align: center;
-            margin-bottom: 4rem;
+            margin-bottom: 2rem;
+            width: 100%;
         }
 
         .goal-title {
             font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             color: var(--secondary);
             margin-bottom: 0.5rem;
         }
@@ -125,21 +168,33 @@
             <div class="logo-area" onclick="window.location.href='index.html'" style="cursor: pointer;">
                 <img src="logo1.jpeg" alt="Her Way Logo" class="logo">
                 <div class="logo-text-group">
-                    <span class="brand-name">Her Way</span>
+                    <span class="brand-name" data-i18n="brand_name">Her Way</span>
+                    <span class="tagline" data-i18n="tagline_main">"Empower. Equip. Elevate."</span>
                 </div>
             </div>
             <nav class="header-nav">
-                <button class="nav-tab" onclick="window.location.href='index.html'">Home</button>
-                <button class="nav-tab active">Pathway</button>
+                <a href="index.html" class="nav-link" data-i18n="home_btn">Home</a>
             </nav>
-            <div class="header-icons">
-                <button class="nav-icon-btn profile-trigger" onclick="window.location.href='profile.html'">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="size-6">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                    </svg>
-                </button>
+            <div class="header-right">
+                <div id="google_translate_element"></div>
+                <div class="user-control">
+                    <span id="user-name-display" class="user-greeting"></span>
+                    <button class="nav-icon profile-trigger" title="Profile">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+                    </button>
+                    <button id="logout-btn" class="nav-icon logout-btn" title="Logout"
+                        onclick="localStorage.removeItem('loggedInUser'); window.location.href='login.html'">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
     </header>
@@ -154,15 +209,20 @@
                 <p id="goal-subtext" style="color: var(--text-muted);">Mastering the art of design and commerce.</p>
             </div>
 
-            <svg class="road-svg" viewBox="0 0 100 400">
-                <path d="M50,0 Q90,100 50,200 T50,400" fill="none" stroke="url(#roadGradient)" stroke-width="6"
-                    stroke-dasharray="12" stroke-linecap="round" />
+            <svg class="road-svg" viewBox="0 0 200 800" preserveAspectRatio="none">
                 <defs>
-                    <linearGradient id="roadGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" style="stop-color:var(--terracotta);stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:var(--accent);stop-opacity:1" />
+                    <linearGradient id="asphaltGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#444;stop-opacity:1" />
+                        <stop offset="50%" style="stop-color:#222;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#444;stop-opacity:1" />
                     </linearGradient>
                 </defs>
+                <!-- Broad Asphalt Road -->
+                <path d="M100,0 Q180,200 100,400 T100,800" fill="none" stroke="url(#asphaltGradient)" stroke-width="80"
+                    stroke-linecap="round" />
+                <!-- Dashed Center Line -->
+                <path d="M100,0 Q180,200 100,400 T100,800" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="3"
+                    stroke-dasharray="15,25" stroke-linecap="round" />
             </svg>
 
             <div class="skill-list" id="skill-nodes-container">
@@ -199,7 +259,7 @@
         <span class="close-btn" onclick="closeDetails()">Close Exploration</span>
     </div>
 
-    <script src="app.js"></script>
+    <script type="module" src="app.js"></script>
     <script>
         function showDetails(title, desc) {
             const box = document.getElementById('details-box');
@@ -214,7 +274,7 @@
 
         // Dynamic adjustment based on current user goal
         window.addEventListener('load', () => {
-            const user = JSON.parse(localStorage.getItem('herway_user'));
+            const user = JSON.parse(localStorage.getItem('loggedInUser'));
             if (user && user.career_goal) {
                 document.getElementById('goal-text').innerText = `🎯 Goal: ${user.career_goal}`;
                 document.getElementById('goal-subtext').innerText = `From learning basics to becoming a master ${user.career_goal.toLowerCase()}.`;
