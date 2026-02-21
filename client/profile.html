@@ -129,6 +129,83 @@
                 </div>
             </div>
         </section>
+
+        <!-- Connection Requests Section -->
+        <section class="profile-requests-section" id="requests-section" style="display: none;">
+            <div class="glass-card" style="padding: 1.5rem;">
+                <h3 class="card-title" style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" style="width: 22px; height: 22px; color: var(--terracotta);">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                    </svg>
+                    Connection Requests
+                    <span id="request-count-badge" class="request-count-badge" style="display: none;">0</span>
+                </h3>
+                <div class="request-tabs">
+                    <button class="request-tab active" data-tab="incoming" id="tab-incoming">📥 Incoming</button>
+                    <button class="request-tab" data-tab="outgoing" id="tab-outgoing">📤 Sent</button>
+                </div>
+                <div id="incoming-requests" class="request-list">
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Loading requests...</p>
+                </div>
+                <div id="outgoing-requests" class="request-list" style="display: none;">
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Loading requests...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Rating Section -->
+        <section class="profile-ratings-section">
+            <div class="grid-two-col">
+                <!-- Rate This User (only on other profiles) -->
+                <div id="rate-user-card" class="glass-card" style="padding: 1.5rem; display: none;">
+                    <h3 class="card-title" style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" style="width: 22px; height: 22px; color: #f59e0b;">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+                        </svg>
+                        Rate This User
+                    </h3>
+                    <div class="star-rating-input" id="star-rating-input">
+                        <span class="star-btn" data-value="1">★</span>
+                        <span class="star-btn" data-value="2">★</span>
+                        <span class="star-btn" data-value="3">★</span>
+                        <span class="star-btn" data-value="4">★</span>
+                        <span class="star-btn" data-value="5">★</span>
+                    </div>
+                    <textarea id="review-text" placeholder="Write a short review (optional)..."
+                        style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--glass-bg); font-size: 0.95rem; resize: vertical; min-height: 60px; margin-top: 0.75rem; font-family: 'Outfit', sans-serif;"></textarea>
+                    <button id="submit-rating-btn" class="grad-btn"
+                        style="margin-top: 1rem; padding: 10px 24px; font-size: 0.9rem; width: 100%;">
+                        Submit Rating
+                    </button>
+                </div>
+
+                <!-- Ratings & Reviews -->
+                <div class="glass-card" style="padding: 1.5rem;">
+                    <h3 class="card-title" style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" style="width: 22px; height: 22px; color: #f59e0b;">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+                        </svg>
+                        Ratings & Reviews
+                    </h3>
+                    <div class="rating-summary" id="rating-summary">
+                        <div class="rating-avg">
+                            <span class="rating-number" id="avg-rating">—</span>
+                            <div class="rating-stars-display" id="avg-stars"></div>
+                            <span class="rating-count" id="rating-count">No ratings yet</span>
+                        </div>
+                    </div>
+                    <div id="reviews-list" class="reviews-list">
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">No reviews yet.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <script type="module" src="app.js"></script>

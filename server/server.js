@@ -826,7 +826,168 @@ app.post('/api/roadmap/generate', async (req, res) => {
     }
 });
 
-// ── Gemini Proxy (keeps API key server-side) ──
+// ── Barter Connection Requests ──
+
+app.post('/api/barter-requests', async (req, res) => {
+    if (!checkDb(res)) return;
+    const { from_user_id, to_user_id, barter_id, message } = req.body;
+
+    if (!from_user_id || !to_user_id) {
+        return res.status(400).json({ error: 'from_user_id and to_user_id are required' });
+    }
+
+    try {
+        // Check for duplicate pending request
+        const { data: existing } = await supabase
+            .from('barter_requests')
+            .select('id')
+            .eq('from_user_id', from_user_id)
+            .eq('to_user_id', to_user_id)
+            .eq('status', 'pending');
+
+        if (existing && existing.length > 0) {
+            return res.status(409).json({ error: 'You already have a pending request to this user' });
+        }
+
+        const { data, error } = await supabase
+            .from('barter_requests')
+            .insert([{ from_user_id, to_user_id, barter_id: barter_id || null, message: message || '' }])
+            .select('*, from_user:users!barter_requests_from_user_id_fkey(id, name, skills, location)')
+            .single();
+
+        if (error) throw error;
+        res.json(data);
+    } catch (err) {
+        console.error('Error creating barter request:', err);
+        res.status(500).json({ error: 'Failed to send request' });
+    }
+});
+
+app.get('/api/barter-requests/:userId', async (req, res) => {
+    if (!checkDb(res)) return;
+    const { userId } = req.params;
+
+    try {
+        // Get incoming requests (to this user)
+        const { data: incoming, error: inErr } = await supabase
+            .from('barter_requests')
+            .select('*, from_user:users!barter_requests_from_user_id_fkey(id, name, skills, location, bio, profile_img)')
+            .eq('to_user_id', userId)
+            .order('created_at', { ascending: false });
+
+        if (inErr) throw inErr;
+
+        // Get outgoing requests (from this user)
+        const { data: outgoing, error: outErr } = await supabase
+            .from('barter_requests')
+            .select('*, to_user:users!barter_requests_to_user_id_fkey(id, name, skills, location, bio, profile_img)')
+            .eq('from_user_id', userId)
+            .order('created_at', { ascending: false });
+
+        if (outErr) throw outErr;
+
+        res.json({ incoming: incoming || [], outgoing: outgoing || [] });
+    } catch (err) {
+        console.error('Error fetching barter requests:', err);
+        res.status(500).json({ error: 'Failed to fetch requests' });
+    }
+});
+
+app.patch('/api/barter-requests/:id', async (req, res) => {
+    if (!checkDb(res)) return;
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!['accepted', 'rejected'].includes(status)) {
+        return res.status(400).json({ error: 'Status must be "accepted" or "rejected"' });
+    }
+
+    try {
+        const { data, error } = await supabase
+            .from('barter_requests')
+            .update({ status })
+            .eq('id', id)
+            .select('*, from_user:users!barter_requests_from_user_id_fkey(id, name, email, skills, location, bio, profile_img)')
+            .single();
+
+        if (error) throw error;
+        res.json(data);
+    } catch (err) {
+        console.error('Error updating barter request:', err);
+        res.status(500).json({ error: 'Failed to update request' });
+    }
+});
+
+// ── User Ratings ──
+
+app.post('/api/ratings', async (req, res) => {
+    if (!checkDb(res)) return;
+    const { from_user_id, to_user_id, rating, review } = req.body;
+
+    if (!from_user_id || !to_user_id || !rating) {
+        return res.status(400).json({ error: 'from_user_id, to_user_id, and rating are required' });
+    }
+
+    if (from_user_id === to_user_id) {
+        return res.status(400).json({ error: 'You cannot rate yourself' });
+    }
+
+    try {
+        // Upsert: update if already rated, insert if new
+        const { data: existing } = await supabase
+            .from('ratings')
+            .select('id')
+            .eq('from_user_id', from_user_id)
+            .eq('to_user_id', to_user_id);
+
+        let data, error;
+        if (existing && existing.length > 0) {
+            ({ data, error } = await supabase
+                .from('ratings')
+                .update({ rating, review: review || '' })
+                .eq('id', existing[0].id)
+                .select()
+                .single());
+        } else {
+            ({ data, error } = await supabase
+                .from('ratings')
+                .insert([{ from_user_id, to_user_id, rating, review: review || '' }])
+                .select()
+                .single());
+        }
+
+        if (error) throw error;
+        res.json(data);
+    } catch (err) {
+        console.error('Error submitting rating:', err);
+        res.status(500).json({ error: 'Failed to submit rating' });
+    }
+});
+
+app.get('/api/ratings/:userId', async (req, res) => {
+    if (!checkDb(res)) return;
+    const { userId } = req.params;
+
+    try {
+        const { data, error } = await supabase
+            .from('ratings')
+            .select('*, from_user:users!ratings_from_user_id_fkey(id, name, profile_img)')
+            .eq('to_user_id', userId)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        // Calculate average
+        const avg = data.length > 0
+            ? (data.reduce((sum, r) => sum + r.rating, 0) / data.length).toFixed(1)
+            : 0;
+
+        res.json({ ratings: data || [], average: parseFloat(avg), count: data.length });
+    } catch (err) {
+        console.error('Error fetching ratings:', err);
+        res.status(500).json({ error: 'Failed to fetch ratings' });
+    }
+});
 app.post('/api/gemini/generate', async (req, res) => {
     try {
         if (!GEMINI_API_KEY) {

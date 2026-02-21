@@ -936,6 +936,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const modal = document.getElementById('profile-modal');
             if (!modal) return;
 
+            // Store the user ID for the send-request button
+            modal.dataset.viewedUserId = userId;
+
             // Show loader state if possible or just open
             modal.classList.remove('hidden');
 
@@ -970,9 +973,322 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 }
 
+                // Fetch and show rating in modal
+                const ratingDisplay = document.getElementById('modal-rating-display');
+                if (ratingDisplay) {
+                    try {
+                        const ratingRes = await fetch(`${API_BASE}/ratings/${userId}`);
+                        const ratingData = await ratingRes.json();
+                        if (ratingData.count > 0) {
+                            const fullStars = Math.floor(ratingData.average);
+                            const stars = '★'.repeat(fullStars) + '☆'.repeat(5 - fullStars);
+                            ratingDisplay.innerHTML = `<span class="stars">${stars}</span> <span class="count">${ratingData.average} (${ratingData.count} reviews)</span>`;
+                        } else {
+                            ratingDisplay.innerHTML = `<span class="count">No ratings yet</span>`;
+                        }
+                    } catch (e) {
+                        ratingDisplay.innerHTML = '';
+                    }
+                }
+
+                // Configure send-request button
+                const sendReqBtn = document.getElementById('send-request-btn');
+                if (sendReqBtn) {
+                    // Hide if viewing own profile
+                    if (loggedInUser && loggedInUser.id == userId) {
+                        sendReqBtn.style.display = 'none';
+                    } else {
+                        sendReqBtn.style.display = 'flex';
+                        sendReqBtn.disabled = false;
+                        sendReqBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 18px; height: 18px;"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" /></svg> Send Request`;
+                    }
+                }
 
             } catch (err) {
                 console.error('Error opening profile popup', err);
+            }
+        }
+
+        // Send Request button handler
+        const sendReqBtn = document.getElementById('send-request-btn');
+        if (sendReqBtn) {
+            sendReqBtn.addEventListener('click', async () => {
+                const modal = document.getElementById('profile-modal');
+                const toUserId = modal?.dataset.viewedUserId;
+
+                if (!toUserId || !loggedInUser?.id) {
+                    showToast('Please log in to send requests', 'error');
+                    return;
+                }
+
+                sendReqBtn.disabled = true;
+                sendReqBtn.textContent = 'Sending...';
+
+                try {
+                    const res = await fetch(`${API_BASE}/barter-requests`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            from_user_id: loggedInUser.id,
+                            to_user_id: parseInt(toUserId),
+                            message: 'I would like to exchange skills with you!'
+                        })
+                    });
+
+                    if (res.status === 409) {
+                        showToast('You already have a pending request to this user', 'info');
+                    } else if (res.ok) {
+                        showToast('Request sent successfully! ✨', 'success');
+                        sendReqBtn.innerHTML = '✓ Request Sent';
+                    } else {
+                        const data = await res.json();
+                        showToast(data.error || 'Failed to send request', 'error');
+                        sendReqBtn.disabled = false;
+                        sendReqBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 18px; height: 18px;"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" /></svg> Send Request`;
+                    }
+                } catch (err) {
+                    console.error('Error sending request', err);
+                    showToast('Connection error. Please try again.', 'error');
+                    sendReqBtn.disabled = false;
+                }
+            });
+        }
+
+        // ── Barter Requests & Ratings Management ──
+
+        async function loadBarterRequests(userId) {
+            const incomingList = document.getElementById('incoming-requests');
+            const outgoingList = document.getElementById('outgoing-requests');
+            const countBadge = document.getElementById('request-count-badge');
+
+            if (!incomingList || !outgoingList) return;
+
+            try {
+                const res = await fetch(`${API_BASE}/barter-requests/${userId}`);
+                const data = await res.json();
+
+                // Render Incoming
+                if (data.incoming.length === 0) {
+                    incomingList.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem; padding: 1rem;">No incoming requests yet.</p>';
+                    if (countBadge) countBadge.style.display = 'none';
+                } else {
+                    if (countBadge) {
+                        const pendingCount = data.incoming.filter(r => r.status === 'pending').length;
+                        if (pendingCount > 0) {
+                            countBadge.textContent = pendingCount;
+                            countBadge.style.display = 'inline-flex';
+                        } else {
+                            countBadge.style.display = 'none';
+                        }
+                    }
+
+                    incomingList.innerHTML = data.incoming.map(req => `
+                        <div class="request-card status-${req.status}">
+                            <img src="${req.from_user.profile_img || 'default-avatar.png'}" class="request-avatar">
+                            <div class="request-info">
+                                <h4>${req.from_user.name}</h4>
+                                <p>${req.message}</p>
+                                <span class="request-status-badge ${req.status}">${req.status}</span>
+                            </div>
+                            ${req.status === 'pending' ? `
+                                <div class="request-actions">
+                                    <button class="accept-btn" onclick="handleRequest(${req.id}, 'accepted')">Accept</button>
+                                    <button class="reject-btn" onclick="handleRequest(${req.id}, 'rejected')">Reject</button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `).join('');
+                }
+
+                // Render Outgoing
+                if (data.outgoing.length === 0) {
+                    outgoingList.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem; padding: 1rem;">You haven\'t sent any requests.</p>';
+                } else {
+                    outgoingList.innerHTML = data.outgoing.map(req => `
+                        <div class="request-card status-${req.status}">
+                            <img src="${req.to_user.profile_img || 'default-avatar.png'}" class="request-avatar">
+                            <div class="request-info">
+                                <h4>To: ${req.to_user.name}</h4>
+                                <p>${req.message}</p>
+                                <span class="request-status-badge ${req.status}">${req.status}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+            } catch (err) {
+                console.error('Error loading requests:', err);
+            }
+        }
+
+        window.handleRequest = async function (requestId, status) {
+            try {
+                const res = await fetch(`${API_BASE}/barter-requests/${requestId}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+
+                if (res.ok) {
+                    showToast(`Request ${status} successfully`, 'success');
+                    if (loggedInUser?.id) loadBarterRequests(loggedInUser.id);
+                }
+            } catch (err) {
+                console.error('Error handling request:', err);
+                showToast('Failed to update request', 'error');
+            }
+        };
+
+        // --- Rating System ---
+        let selectedRating = 0;
+
+        function initRatingSystem() {
+            const stars = document.querySelectorAll('.star-btn');
+            stars.forEach(star => {
+                star.addEventListener('mouseover', function () {
+                    const val = parseInt(this.dataset.value);
+                    stars.forEach(s => {
+                        if (parseInt(s.dataset.value) <= val) s.classList.add('hovered');
+                        else s.classList.remove('hovered');
+                    });
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    stars.forEach(s => s.classList.remove('hovered'));
+                });
+
+                star.addEventListener('click', function () {
+                    selectedRating = parseInt(this.dataset.value);
+                    stars.forEach(s => {
+                        if (parseInt(s.dataset.value) <= selectedRating) s.classList.add('active');
+                        else s.classList.remove('active');
+                    });
+                });
+            });
+
+            const submitBtn = document.getElementById('submit-rating-btn');
+            if (submitBtn) {
+                submitBtn.addEventListener('click', async () => {
+                    const reviewText = document.getElementById('review-text').value;
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const toUserId = urlParams.get('id');
+
+                    if (!selectedRating) {
+                        showToast('Please select a star rating', 'error');
+                        return;
+                    }
+
+                    if (!loggedInUser?.id) {
+                        showToast('Please log in to rate users', 'error');
+                        return;
+                    }
+
+                    try {
+                        const res = await fetch(`${API_BASE}/ratings`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                from_user_id: loggedInUser.id,
+                                to_user_id: parseInt(toUserId),
+                                rating: selectedRating,
+                                review: reviewText
+                            })
+                        });
+
+                        if (res.ok) {
+                            showToast('Rating submitted! Thank you.', 'success');
+                            loadRatings(toUserId);
+                            document.getElementById('review-text').value = '';
+                        }
+                    } catch (err) {
+                        console.error('Error submitting rating:', err);
+                        showToast('Failed to submit rating', 'error');
+                    }
+                });
+            }
+        }
+
+        async function loadRatings(userId) {
+            const avgRatingEl = document.getElementById('avg-rating');
+            const avgStarsEl = document.getElementById('avg-stars');
+            const ratingCountEl = document.getElementById('rating-count');
+            const reviewsList = document.getElementById('reviews-list');
+
+            if (!reviewsList) return;
+
+            try {
+                const res = await fetch(`${API_BASE}/ratings/${userId}`);
+                const data = await res.json();
+
+                if (data.count > 0) {
+                    if (avgRatingEl) avgRatingEl.textContent = data.average;
+                    if (avgStarsEl) {
+                        const fullStars = Math.floor(data.average);
+                        avgStarsEl.textContent = '★'.repeat(fullStars) + '☆'.repeat(5 - fullStars);
+                    }
+                    if (ratingCountEl) ratingCountEl.textContent = `Based on ${data.count} reviews`;
+
+                    reviewsList.innerHTML = data.ratings.map(r => `
+                        <div class="review-card">
+                            <img src="${r.from_user.profile_img || 'default-avatar.png'}" class="review-avatar">
+                            <div class="review-body">
+                                <div class="review-header">
+                                    <h5>${r.from_user.name}</h5>
+                                    <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+                                </div>
+                                <p>${r.review || 'No comment left.'}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    if (avgRatingEl) avgRatingEl.textContent = '—';
+                    if (ratingCountEl) ratingCountEl.textContent = 'No ratings yet';
+                    reviewsList.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem; padding: 1rem;">Be the first to rate this user!</p>';
+                }
+            } catch (err) {
+                console.error('Error loading ratings:', err);
+            }
+        }
+
+        // --- Tab Switching for Requests ---
+        const tabIncoming = document.getElementById('tab-incoming');
+        const tabOutgoing = document.getElementById('tab-outgoing');
+        const listIncoming = document.getElementById('incoming-requests');
+        const listOutgoing = document.getElementById('outgoing-requests');
+
+        if (tabIncoming && tabOutgoing) {
+            tabIncoming.onclick = () => {
+                tabIncoming.classList.add('active');
+                tabOutgoing.classList.remove('active');
+                listIncoming.style.display = 'flex';
+                listOutgoing.style.display = 'none';
+            };
+            tabOutgoing.onclick = () => {
+                tabOutgoing.classList.add('active');
+                tabIncoming.classList.remove('active');
+                listOutgoing.style.display = 'flex';
+                listIncoming.style.display = 'none';
+            };
+        }
+
+        // Initialize and check current user context
+        if (window.location.pathname.includes('profile.html')) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const viewUserId = urlParams.get('id') || loggedInUser?.id;
+            const isOwnProfile = !urlParams.get('id') || urlParams.get('id') == loggedInUser?.id;
+
+            if (isOwnProfile && loggedInUser?.id) {
+                const reqSection = document.getElementById('requests-section');
+                if (reqSection) reqSection.style.display = 'block';
+                loadBarterRequests(loggedInUser.id);
+            } else if (viewUserId) {
+                const rateCard = document.getElementById('rate-user-card');
+                if (rateCard) rateCard.style.display = 'block';
+                initRatingSystem();
+            }
+
+            if (viewUserId) {
+                loadRatings(viewUserId);
             }
         }
 
