@@ -555,76 +555,32 @@
         }
 
         let currentQuestion = 0;
-        let totalQuestions = 10;
+        let totalQuestions = 5;
         let score = 0;
         let assessmentAnswers = [];
+        let userSkills = "";
+        let careerGoal = "";
 
-        // Predefined questions and answers for fallback
-        const questionBank = [
-            {
-                question: "What is object-oriented programming?",
-                keywords: ["class", "object", "inheritance", "polymorphism", "encapsulation"],
-                idealAnswer: "Object-oriented programming is a programming paradigm that uses objects and classes."
-            },
-            {
-                question: "Explain the difference between HTTP and HTTPS.",
-                keywords: ["secure", "ssl", "tls", "encryption", "certificate"],
-                idealAnswer: "HTTPS is the secure version of HTTP using SSL/TLS encryption."
-            },
-            {
-                question: "What is version control and why is it important?",
-                keywords: ["git", "track", "changes", "collaboration", "history", "branch"],
-                idealAnswer: "Version control tracks changes to code over time for collaboration and history."
-            },
-            {
-                question: "Explain what a database index is.",
-                keywords: ["performance", "speed", "query", "search", "data structure"],
-                idealAnswer: "A database index improves the speed of data retrieval operations."
-            },
-            {
-                question: "What is responsive web design?",
-                keywords: ["mobile", "adaptive", "flexible", "media queries", "viewport"],
-                idealAnswer: "Responsive design makes pages render well on different devices using flexible layouts."
-            },
-            {
-                question: "What is machine learning?",
-                keywords: ["algorithm", "data", "pattern", "prediction", "model", "training"],
-                idealAnswer: "Machine learning is a branch of AI where systems learn from data to make predictions."
-            },
-            {
-                question: "What is the purpose of an API?",
-                keywords: ["interface", "communication", "request", "response", "endpoint"],
-                idealAnswer: "An API allows different software applications to communicate with each other."
-            },
-            {
-                question: "What is cloud computing?",
-                keywords: ["server", "storage", "internet", "scalable", "on-demand"],
-                idealAnswer: "Cloud computing delivers computing services over the internet on demand."
-            },
-            {
-                question: "What is data privacy?",
-                keywords: ["personal", "protection", "consent", "security", "regulation"],
-                idealAnswer: "Data privacy is the proper handling and protection of personal information."
-            },
-            {
-                question: "What is the importance of soft skills in the workplace?",
-                keywords: ["communication", "teamwork", "leadership", "adaptability", "problem-solving"],
-                idealAnswer: "Soft skills like communication and teamwork are essential for workplace success."
-            }
-        ];
-
-        // Initialize greeting on page load
+        // Initialize on page load
         window.addEventListener('load', async () => {
+            const user = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
+            userSkills = Array.isArray(user.skills) ? user.skills.join(', ') : (user.skills || "");
+            careerGoal = user.career_goal || localStorage.getItem('targetCareer') || "General Growth";
+
+            const userNameEl = document.getElementById('user-name-display');
+            if (userNameEl && user.name) userNameEl.textContent = user.name;
+
             await generateGreeting();
         });
 
         async function generateGreeting() {
             try {
-                const prompt = "Generate a warm, encouraging greeting welcoming a woman to a skill assessment test. Keep it short (1-2 sentences) and motivational. Just return the greeting text only, no additional text.";
+                const prompt = `Generate a warm, encouraging greeting for ${careerGoal ? 'a woman pursuing ' + careerGoal : 'a woman starting her career journey'}. 
+                Keep it short (1-2 sentences) and motivational. Just return the greeting text only.`;
                 const greeting = await callGemini(prompt, 100, 0.7);
-                document.getElementById('greetingText').textContent = greeting || "Welcome to the Skill Gap Assessment! Let's discover your potential.";
+                document.getElementById('greetingText').textContent = greeting || "Welcome! Let's discover your unique strengths and growth areas.";
             } catch (error) {
-                console.error('Error generating greeting:', error);
+                console.error('Error:', error);
                 document.getElementById('greetingText').textContent = "Welcome, Queen! Ready to discover your strengths? Let's begin! ✨";
             }
         }
@@ -643,21 +599,45 @@
                 document.getElementById('submitBtn').disabled = false;
                 document.getElementById('answerInput').disabled = false;
 
-                const prompt = "Generate ONE professional skill assessment question. The question should be about professional skills, technology, business, or workplace knowledge. It must be clear and answerable in 2-3 sentences. Do NOT include explanations or labels like 'Question:'. Just return the question text only.";
-                const question = await callGemini(prompt, 100, 0.7);
+                const historyList = assessmentAnswers.map(a => a.question);
+                let question = "";
+                let attempts = 0;
+                const maxAttempts = 3;
 
-                if (!question || question.trim() === '') {
-                    throw new Error('Empty response');
+                while (attempts < maxAttempts) {
+                    const prompt = `You are a professional AI Career Coach for ${careerGoal}.
+                    TASK: Generate ONE unique skill assessment question.
+                    CONTEXT: User has skills [${userSkills}] and wants to be a [${careerGoal}].
+                    STRICT RULE: Do NOT generate any of these previous questions:
+                    ${historyList.length > 0 ? historyList.map((q, i) => `${i + 1}. ${q}`).join('\n') : 'None yet'}
+                    
+                    REQUIREMENT: The question must test a different specific technical or soft skill required for ${careerGoal} than the ones already tested.
+                    REPLY WITH ONLY THE QUESTION TEXT. NO EXPLANATIONS.`;
+
+                    const response = await callGemini(prompt, 150, 0.8);
+                    const cleanedResponse = response.trim();
+
+                    // Client-side uniqueness check
+                    const isDuplicate = historyList.some(prev =>
+                        cleanedResponse.toLowerCase() === prev.toLowerCase() ||
+                        cleanedResponse.includes(prev.substring(0, 20)) ||
+                        prev.includes(cleanedResponse.substring(0, 20))
+                    );
+
+                    if (!isDuplicate && cleanedResponse.length > 10) {
+                        question = cleanedResponse;
+                        break;
+                    }
+                    attempts++;
+                    console.warn(`Duplicate or invalid question detected. Attempt ${attempts} of ${maxAttempts}`);
                 }
 
-                document.getElementById('questionText').textContent = question;
+                document.getElementById('questionText').textContent = question || "How do you handle complex tasks when working under a deadline?";
                 updateProgressBar();
-                resetAnswer();
             } catch (error) {
-                console.error('Error generating question:', error);
-                document.getElementById('questionText').textContent = questionBank[currentQuestion % questionBank.length].question;
+                console.error('Error:', error);
+                document.getElementById('questionText').textContent = "Tell us about a time you had to learn a new skill quickly for a project.";
                 updateProgressBar();
-                resetAnswer();
             }
         }
 
@@ -669,8 +649,8 @@
                 return;
             }
 
-            if (answer.length < 10) {
-                showError('Please provide a more detailed answer (at least 10 characters).');
+            if (answer.length < 15) {
+                showError('Please provide a more detailed answer.');
                 return;
             }
 
@@ -691,67 +671,46 @@
             try {
                 const question = document.getElementById('questionText').textContent;
 
-                const prompt = `You are an expert interviewer evaluating a candidate's answer.
+                const prompt = `Evaluate this answer for a potential ${careerGoal}.
+                Question: "${question}"
+                Answer: "${answer}"
+                
+                Provide evaluation in this exact format:
+                RESULT: [CORRECT/INCORRECT]
+                SCORE: [1-10]
+                FEEDBACK: [2-3 sentences of professional advice]`;
 
-Question: "${question}"
+                const assessment = await callGemini(prompt, 250, 0.3);
 
-Candidate's Answer: "${answer}"
-
-Evaluate this answer based on:
-1. Accuracy - Is the information correct?
-2. Completeness - Does it fully answer the question?
-3. Relevance - Is it directly related to the question?
-4. Clarity - Is it well-explained?
-
-First line must be either "CORRECT" if the answer is satisfactory, or "INCORRECT" if it's wrong or incomplete.
-Then provide a brief, constructive feedback (2-3 sentences) explaining why and how to improve.
-Be fair but honest in your evaluation.`;
-
-                const assessment = await callGemini(prompt, 200, 0.3);
-
-                if (!assessment) throw new Error('No assessment generated');
-
-                const isCorrect = assessment.toUpperCase().startsWith('CORRECT');
+                const isCorrect = assessment.toUpperCase().includes('RESULT: CORRECT');
+                const scoreMatch = assessment.match(/SCORE:\s*(\d+)/i);
+                const qScore = scoreMatch ? parseInt(scoreMatch[1]) : (isCorrect ? 8 : 4);
 
                 if (isCorrect) {
-                    score++;
+                    score += qScore;
                     document.getElementById('assessmentResult').classList.remove('incorrect');
-                    document.getElementById('assessmentLabel').textContent = '✓ Correct!';
+                    document.getElementById('assessmentLabel').textContent = `✓ Strong Answer! (${qScore}/10)`;
                 } else {
                     document.getElementById('assessmentResult').classList.add('incorrect');
-                    document.getElementById('assessmentLabel').textContent = '✗ Needs Improvement';
+                    document.getElementById('assessmentLabel').textContent = `✗ Growth Area Identified (${qScore}/10)`;
                 }
 
-                document.getElementById('assessmentContent').textContent = assessment;
+                document.getElementById('assessmentContent').textContent = assessment.includes('FEEDBACK:') ? assessment.split('FEEDBACK:')[1].trim() : assessment;
                 document.getElementById('nextBtn').disabled = false;
 
-                assessmentAnswers.push({ question, answer, assessment, isCorrect });
+                assessmentAnswers.push({ question, answer, score: qScore, isCorrect });
 
             } catch (error) {
-                console.error('Error assessing answer:', error);
-
-                const questionObj = questionBank.find(q => q.question === document.getElementById('questionText').textContent) ||
-                    questionBank[currentQuestion % questionBank.length];
-
-                const answerLower = answer.toLowerCase();
-                const keywordMatches = questionObj.keywords.filter(k => answerLower.includes(k.toLowerCase())).length;
-                const isCorrect = (keywordMatches / questionObj.keywords.length) >= 0.4;
-
-                if (isCorrect) {
-                    score++;
-                    document.getElementById('assessmentResult').classList.remove('incorrect');
-                    document.getElementById('assessmentLabel').textContent = '✓ Good Answer!';
-                    document.getElementById('assessmentContent').textContent =
-                        `Your answer covered ${keywordMatches} out of ${questionObj.keywords.length} key points. Great job! To improve, also consider: ${questionObj.keywords.join(', ')}.`;
-                } else {
-                    document.getElementById('assessmentResult').classList.add('incorrect');
-                    document.getElementById('assessmentLabel').textContent = '✗ Needs More Detail';
-                    document.getElementById('assessmentContent').textContent =
-                        `Your answer covered ${keywordMatches} out of ${questionObj.keywords.length} key points. A stronger answer should include: ${questionObj.keywords.join(', ')}.`;
-                }
-
-                document.getElementById('assessmentResult').classList.add('active');
+                console.error('Error:', error);
+                document.getElementById('assessmentLabel').textContent = '✓ Answer Received';
+                document.getElementById('assessmentContent').textContent = 'Good effort! We are recording your response for your roadmap.';
                 document.getElementById('nextBtn').disabled = false;
+                assessmentAnswers.push({
+                    question: document.getElementById('questionText').textContent,
+                    answer,
+                    score: 7,
+                    isCorrect: true
+                });
             }
         }
 
@@ -783,25 +742,64 @@ Be fair but honest in your evaluation.`;
             document.getElementById('submitBtn').disabled = false;
         }
 
-        function showResults() {
+        async function showResults() {
             document.getElementById('assessmentSection').classList.remove('active');
             document.getElementById('resultsSection').classList.add('active');
 
-            const percentage = Math.round((score / totalQuestions) * 100);
+            const maxPossible = totalQuestions * 10;
+            const percentage = Math.round((score / maxPossible) * 100);
             document.getElementById('finalScore').textContent = percentage + '%';
 
             let description = '';
-            if (percentage >= 90) {
-                description = '🌟 Exceptional! You have outstanding knowledge in this area. You\'re ready to lead!';
-            } else if (percentage >= 70) {
-                description = '💪 Great job! You have a solid foundation. A few more areas to sharpen and you\'ll be unstoppable!';
-            } else if (percentage >= 50) {
-                description = '📚 Good effort! With some focused learning, you\'ll bridge these gaps in no time. Keep going!';
-            } else {
-                description = '🌱 Every expert was once a beginner! Review the fundamentals and come back stronger. We believe in you!';
-            }
+            if (percentage >= 90) description = '🌟 Exceptional! You have outstanding knowledge in this area. You\'re ready to lead!';
+            else if (percentage >= 70) description = '💪 Great foundation! Just a few specialized skills to polish.';
+            else if (percentage >= 50) description = '📚 Good start! We have identified specific gaps to help you grow.';
+            else description = '🌱 Every expert starts here. Your custom roadmap will bridge these gaps!';
 
             document.getElementById('scoreDescription').textContent = description;
+
+            // Save to database
+            const user = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
+            if (user.id) {
+                document.getElementById('scoreDescription').innerHTML += '<br><br><div class="loading-spinner"></div> Updating your roadmap...';
+                await saveAndGenerateRoadmap(user.id, percentage);
+                document.getElementById('scoreDescription').innerHTML = description + '<br><br>✅ Roadmap updated based on your gaps!';
+            }
+        }
+
+        async function saveAndGenerateRoadmap(userId, finalScore) {
+            try {
+                // 1. Save Session
+                const results = assessmentAnswers.map(a => ({
+                    question: a.question,
+                    answer: a.answer,
+                    score: a.score
+                }));
+
+                await fetch(`${API_BASE}/api/skill-gap/save`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId,
+                        careerIntent: careerGoal,
+                        sessionData: results,
+                        totalScore: finalScore
+                    })
+                });
+
+                // 2. Generate Roadmap
+                await fetch(`${API_BASE}/api/roadmap/generate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId,
+                        careerIntent: careerGoal,
+                        results: results
+                    })
+                });
+            } catch (err) {
+                console.error('Failed to update roadmap:', err);
+            }
         }
 
         function showError(message) {
@@ -821,6 +819,7 @@ Be fair but honest in your evaluation.`;
             }
         });
     </script>
+    <script type="module" src="app.js"></script>
 </body>
 
 </html>

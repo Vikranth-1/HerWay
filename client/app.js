@@ -73,16 +73,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // --- Google Translate Initialization ---
         window.googleTranslateElementInit = function () {
-            new google.translate.TranslateElement({
-                pageLanguage: 'en',
-                includedLanguages: 'en,hi,ta,te,kn,mr',
-                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-            }, 'google_translate_element');
+            try {
+                if (typeof google !== 'undefined' && google.translate && google.translate.TranslateElement) {
+                    new google.translate.TranslateElement({
+                        pageLanguage: 'en',
+                        includedLanguages: 'en,hi,ta,te,kn,mr',
+                        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+                    }, 'google_translate_element');
+                }
+            } catch (e) {
+                console.error('Google Translate init failed', e);
+            }
         };
 
         const gtScript = document.createElement('script');
         gtScript.type = 'text/javascript';
-        gtScript.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+        gtScript.async = true;
+        gtScript.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
         document.body.appendChild(gtScript);
 
         // --- reveal logic ---

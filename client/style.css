@@ -253,24 +253,32 @@ html {
 }
 
 #google_translate_element {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    padding: 0.4rem 0.8rem;
-    border-radius: 12px;
-    display: inline-block;
+    background: white;
+    border: 1.5px solid var(--terracotta);
+    padding: 0.2rem 0.6rem;
+    border-radius: 50px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 140px;
+    height: 40px;
+    box-shadow: 0 4px 15px rgba(244, 114, 141, 0.1);
     vertical-align: middle;
+    overflow: hidden;
+}
+
+#google_translate_element * {
+    font-size: 0.85rem !important;
+    color: var(--secondary) !important;
+    font-family: 'Outfit', sans-serif !important;
+    font-weight: 600 !important;
 }
 
 #google_translate_element select {
-    background: transparent;
-    border: none;
-    padding: 2px 5px;
-    font-size: 0.85rem;
-    color: var(--secondary);
-    font-family: inherit;
-    font-weight: 600;
-    outline: none;
-    cursor: pointer;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    cursor: pointer !important;
 }
 
 .lang-switcher {
